@@ -2,9 +2,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, Users, FileText, MessageSquare, 
-  CreditCard, BarChart3, Settings, ChevronLeft, 
+import {
+  LayoutDashboard, Users, FileText, MessageSquare,
+  CreditCard, BarChart3, Settings, ChevronLeft,
   Building2, LogOut, Zap
 } from "lucide-react";
 
@@ -25,7 +25,7 @@ export default function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className={`${collapsed ? "w-16" : "w-60"} transition-all duration-300 bg-[#111118] border-r border-[#1E1E2E] flex flex-col shrink-0`}>
+    <aside className={`${collapsed ? "w-16" : "w-60"} transition-all duration-300 bg-[#111118] border-r border-[#1E1E2E] flex flex-col shrink-0 h-screen sticky top-0`}>
       <div className="h-16 flex items-center px-4 border-b border-[#1E1E2E]">
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -42,14 +42,15 @@ export default function DashboardSidebar() {
           <ChevronLeft size={16} className={`transition-transform ${collapsed ? "rotate-180" : ""}`} />
         </button>
       </div>
-      <nav className="flex-1 p-2 space-y-0.5">
+
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                 isActive
                   ? "bg-[#6C5CE7]/15 text-[#8B7FFF] border border-[#6C5CE7]/20"
                   : "text-[#8888A0] hover:bg-[#1E1E2E] hover:text-white"
@@ -62,7 +63,8 @@ export default function DashboardSidebar() {
           );
         })}
       </nav>
-      <div className="p-2 border-t border-[#1E1E2E] space-y-0.5">
+
+      <div className="p-2 border-t border-[#1E1E2E]">
         <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#8888A0] hover:bg-[#1E1E2E] hover:text-white transition-all">
           <LogOut size={17} />
           {!collapsed && <span className="text-sm">Sign Out</span>}

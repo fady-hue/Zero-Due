@@ -3,7 +3,7 @@ import { Bell, Search } from "lucide-react";
 
 export default function DashboardHeader() {
   return (
-    <header className="h-16 bg-[#111118] border-b border-[#1E1E2E] flex items-center justify-between px-6 shrink-0">
+    <header className="h-16 bg-[#111118] border-b border-[#1E1E2E] flex items-center justify-between px-6 shrink-0 sticky top-0 z-10">
       <div className="flex items-center gap-3 flex-1 max-w-md">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A5A]" />
