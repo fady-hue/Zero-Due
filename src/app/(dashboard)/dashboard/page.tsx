@@ -13,11 +13,11 @@ const metrics = [
 ];
 
 const recentCases = [
-  { id: "ZD-2024-001", debtor: "Mohammed Al-Hassan", amount: "SAR 45,000", client: "STC BNPL", status: "PROMISE_TO_PAY", daysOld: 32, score: 78 },
-  { id: "ZD-2024-002", debtor: "Sara Al-Ghamdi", amount: "SAR 12,500", client: "Tamara", status: "CONTACTED", daysOld: 15, score: 62 },
-  { id: "ZD-2024-003", debtor: "Khalid Al-Otaibi", amount: "SAR 88,200", client: "Mobily", status: "INSTALLMENT_PLAN", daysOld: 67, score: 45 },
-  { id: "ZD-2024-004", debtor: "Fatima Al-Zahrani", amount: "SAR 6,800", client: "Tamara", status: "NEW", daysOld: 3, score: 85 },
-  { id: "ZD-2024-005", debtor: "Omar Al-Shammari", amount: "SAR 23,100", client: "STC BNPL", status: "SETTLEMENT_OFFERED", daysOld: 90, score: 35 },
+  { id: "ZD-001", debtor: "Mohammed Al-Hassan", amount: "SAR 45,000", client: "STC BNPL", status: "PROMISE_TO_PAY", daysOld: 32, score: 78 },
+  { id: "ZD-002", debtor: "Sara Al-Ghamdi", amount: "SAR 12,500", client: "Tamara", status: "CONTACTED", daysOld: 15, score: 62 },
+  { id: "ZD-003", debtor: "Khalid Al-Otaibi", amount: "SAR 88,200", client: "Mobily", status: "INSTALLMENT_PLAN", daysOld: 67, score: 45 },
+  { id: "ZD-004", debtor: "Fatima Al-Zahrani", amount: "SAR 6,800", client: "Tamara", status: "NEW", daysOld: 3, score: 85 },
+  { id: "ZD-005", debtor: "Omar Al-Shammari", amount: "SAR 23,100", client: "STC BNPL", status: "SETTLEMENT_OFFERED", daysOld: 90, score: 35 },
 ];
 
 const statusColors: Record<string, string> = {
@@ -30,38 +30,50 @@ const statusColors: Record<string, string> = {
 };
 
 const aiRecommendations = [
-  { case: "ZD-2024-001", action: "Send WhatsApp reminder", reason: "PTP due in 2 days", priority: "HIGH", channel: "WhatsApp" },
-  { case: "ZD-2024-005", action: "Escalate settlement offer", reason: "90+ days overdue, low score", priority: "HIGH", channel: "Email" },
-  { case: "ZD-2024-002", action: "Schedule morning call", reason: "Best contact: 9-11 AM SAT", priority: "MEDIUM", channel: "Call" },
+  { case: "ZD-001", action: "Send WhatsApp reminder", reason: "PTP due in 2 days", priority: "HIGH", channel: "WhatsApp" },
+  { case: "ZD-005", action: "Escalate settlement offer", reason: "90+ days overdue, low score", priority: "HIGH", channel: "Email" },
+  { case: "ZD-002", action: "Schedule morning call", reason: "Best contact: 9–11 AM SAT", priority: "MEDIUM", channel: "Call" },
 ];
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-white">Collections Dashboard</h1>
           <p className="text-[#8888A0] text-sm mt-0.5">Overview of all collection activities · Updated just now</p>
         </div>
         <div className="flex items-center gap-3">
           <select className="bg-[#111118] border border-[#1E1E2E] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C5CE7]">
-            <option>All Clients</option><option>Tamara</option><option>STC BNPL</option><option>Mobily</option>
+            <option>All Clients</option>
+            <option>Tamara</option>
+            <option>STC BNPL</option>
+            <option>Mobily</option>
           </select>
           <select className="bg-[#111118] border border-[#1E1E2E] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C5CE7]">
-            <option>This Month</option><option>Last Month</option><option>Last Quarter</option>
+            <option>This Month</option>
+            <option>Last Month</option>
+            <option>Last Quarter</option>
           </select>
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {metrics.map((m, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-4">
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-4"
+          >
             <div className="flex items-center justify-between mb-3">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${m.color}15` }}>
                 <m.icon size={15} style={{ color: m.color }} />
               </div>
               <span className={`text-xs font-semibold flex items-center gap-0.5 ${m.up ? "text-[#00B894]" : "text-[#E17055]"}`}>
-                {m.up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{m.change}
+                {m.up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                {m.change}
               </span>
             </div>
             <div className="text-xl font-black text-white mb-0.5">{m.value}</div>
@@ -71,31 +83,38 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-[#111118] border border-[#1E1E2E] rounded-2xl">
+        <div className="lg:col-span-2 bg-[#111118] border border-[#1E1E2E] rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E1E2E]">
             <h2 className="text-white font-bold text-sm">Recent Cases</h2>
-            <Link href="/dashboard/cases" className="text-[#6C5CE7] text-xs hover:text-[#8B7FFF] flex items-center gap-1">View all <ArrowRight size={12} /></Link>
+            <Link href="/dashboard/cases" className="text-[#6C5CE7] text-xs hover:text-[#8B7FFF] flex items-center gap-1">
+              View all <ArrowRight size={12} />
+            </Link>
           </div>
           <div className="divide-y divide-[#1E1E2E]">
             {recentCases.map((c, i) => (
-              <div key={i} className="px-6 py-3.5 hover:bg-[#16161F] transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#1E1E2E] rounded-full flex items-center justify-center text-[#8B7FFF] font-bold text-xs">
-                      {c.debtor.split(" ").map(n => n[0]).join("").slice(0,2)}
-                    </div>
-                    <div>
-                      <div className="text-white text-sm font-medium">{c.debtor}</div>
-                      <div className="text-[#4A4A5A] text-xs">{c.id} · {c.client}</div>
-                    </div>
+              <div key={i} className="px-6 py-3.5 hover:bg-[#16161F] transition-colors flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 bg-[#1E1E2E] rounded-full flex items-center justify-center text-[#8B7FFF] font-bold text-xs shrink-0">
+                    {c.debtor.split(" ").map(n => n[0]).join("").slice(0, 2)}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right hidden sm:block">
-                      <div className="text-white text-sm font-semibold">{c.amount}</div>
-                      <div className="text-[#4A4A5A] text-xs">{c.daysOld}d overdue</div>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-lg font-medium ${statusColors[c.status] || "bg-[#1E1E2E] text-[#8888A0]"}`}>{c.status.replace(/_/g, " ")}</span>
-                    <div className="w-8 h-8 rounded-full bg-[#1E1E2E] flex items-center justify-center text-xs font-bold" style={{ color: c.score > 70 ? "#00B894" : c.score > 50 ? "#FDCB6E" : "#E17055" }}>{c.score}</div>
+                  <div className="min-w-0">
+                    <div className="text-white text-sm font-medium truncate">{c.debtor}</div>
+                    <div className="text-[#4A4A5A] text-xs">{c.id} · {c.client}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right hidden sm:block">
+                    <div className="text-white text-sm font-semibold">{c.amount}</div>
+                    <div className="text-[#4A4A5A] text-xs">{c.daysOld}d overdue</div>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-lg font-medium ${statusColors[c.status] || "bg-[#1E1E2E] text-[#8888A0]"}`}>
+                    {c.status.replace(/_/g, " ")}
+                  </span>
+                  <div
+                    className="w-8 h-8 rounded-full bg-[#1E1E2E] flex items-center justify-center text-xs font-bold"
+                    style={{ color: c.score > 70 ? "#00B894" : c.score > 50 ? "#FDCB6E" : "#E17055" }}
+                  >
+                    {c.score}
                   </div>
                 </div>
               </div>
@@ -103,7 +122,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl">
+        <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-[#1E1E2E] flex items-center gap-2">
             <Zap size={15} className="text-[#6C5CE7]" />
             <h2 className="text-white font-bold text-sm">AI Recommendations</h2>
@@ -113,11 +132,15 @@ export default function DashboardPage() {
               <div key={i} className="bg-[#0A0A0F] rounded-xl p-4 border border-[#1E1E2E]">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[#6C5CE7] text-xs font-mono">{r.case}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.priority === "HIGH" ? "bg-[#E17055]/20 text-[#E17055]" : "bg-[#FDCB6E]/20 text-[#FDCB6E]"}`}>{r.priority}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.priority === "HIGH" ? "bg-[#E17055]/20 text-[#E17055]" : "bg-[#FDCB6E]/20 text-[#FDCB6E]"}`}>
+                    {r.priority}
+                  </span>
                 </div>
                 <div className="text-white text-sm font-medium mb-1">{r.action}</div>
                 <div className="text-[#8888A0] text-xs mb-3">{r.reason}</div>
-                <button className="w-full text-xs bg-[#6C5CE7]/15 text-[#8B7FFF] border border-[#6C5CE7]/20 rounded-lg py-2 hover:bg-[#6C5CE7]/25 transition-colors">Execute via {r.channel}</button>
+                <button className="w-full text-xs bg-[#6C5CE7]/15 text-[#8B7FFF] border border-[#6C5CE7]/20 rounded-lg py-2 hover:bg-[#6C5CE7]/25 transition-colors">
+                  Execute via {r.channel}
+                </button>
               </div>
             ))}
           </div>
