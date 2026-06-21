@@ -1,0 +1,333 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ZERO_DUE_ADMIN
+  COLLECTIONS_MANAGER
+  COLLECTION_AGENT
+  CLIENT_ADMIN
+  CLIENT_USER
+  DEBTOR
+}
+
+enum CaseStatus {
+  NEW
+  CONTACTED
+  PROMISE_TO_PAY
+  INSTALLMENT_PLAN
+  SETTLEMENT_OFFERED
+  PAID
+  CLOSED
+  DISPUTED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum CommunicationChannel {
+  WHATSAPP
+  SMS
+  EMAIL
+  CALL
+}
+
+enum IndustryType {
+  BNPL
+  TELECOM
+  SME_LENDER
+  FINTECH
+  BANK
+  OTHER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String?   @unique
+  email         String    @unique
+  name          String
+  nameAr        String?
+  phone         String?
+  role          UserRole  @default(COLLECTION_AGENT)
+  isActive      Boolean   @default(true)
+  companyId     String?
+  company       Company?  @relation(fields: [companyId], references: [id])
+
+  assignedCases  DebtCase[]      @relation("AgentCases")
+  activities     Activity[]
+  communications Communication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([clerkId])
+}
+
+model Company {
+  id       String       @id @default(cuid())
+  name     String
+  nameAr   String?
+  industry IndustryType @default(FINTECH)
+  website  String?
+  logo     String?
+  address  String?
+  country  String       @default("SA")
+
+  contractStart DateTime?
+  contractEnd   DateTime?
+  feePercentage Float     @default(3.0)
+  isActive      Boolean   @default(true)
+
+  users      User[]
+  portfolios DebtPortfolio[]
+  cases      DebtCase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Debtor {
+  id         String  @id @default(cuid())
+  externalId String?
+  name       String
+  nameAr     String?
+  nationalId String?
+  phone      String
+  phoneAlt   String?
+  email      String?
+  address    String?
+  city       String?
+  country    String  @default("SA")
+
+  riskScore    Float?
+  riskCategory String?
+
+  cases          DebtCase[]
+  payments       Payment[]
+  communications Communication[]
+
+  portalAccessToken String?   @unique
+  lastPortalLogin   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([nationalId])
+}
+
+model DebtPortfolio {
+  id        String  @id @default(cuid())
+  name      String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  totalAmount Int      @default(0)
+  totalCases  Int      @default(0)
+  uploadedAt  DateTime @default(now())
+  uploadedBy  String?
+
+  cases DebtCase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model DebtCase {
+  id         String @id @default(cuid())
+  caseNumber String @unique @default(cuid())
+
+  debtorId String
+  debtor   Debtor @relation(fields: [debtorId], references: [id])
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  portfolioId String?
+  portfolio   DebtPortfolio? @relation(fields: [portfolioId], references: [id])
+
+  agentId String?
+  agent   User?   @relation("AgentCases", fields: [agentId], references: [id])
+
+  originalAmount Float
+  currentBalance Float
+  currency       String @default("SAR")
+
+  dueDate     DateTime
+  daysPastDue Int        @default(0)
+  status      CaseStatus @default(NEW)
+
+  recoveryScore   Float?
+  bestContactTime String?
+  bestChannel     CommunicationChannel?
+
+  notes         String?
+  internalNotes String?
+
+  payments       Payment[]
+  installments   InstallmentPlan[]
+  settlements    Settlement[]
+  communications Communication[]
+  activities     Activity[]
+
+  closedAt DateTime?
+  paidAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([debtorId])
+  @@index([companyId])
+  @@index([agentId])
+  @@index([status])
+}
+
+model Payment {
+  id       String @id @default(cuid())
+  caseId   String
+  case     DebtCase @relation(fields: [caseId], references: [id])
+  debtorId String
+  debtor   Debtor   @relation(fields: [debtorId], references: [id])
+
+  amount        Float
+  currency      String        @default("SAR")
+  method        String
+  provider      String?
+  transactionId String?       @unique
+
+  status PaymentStatus @default(PENDING)
+
+  installmentId String?
+  installment   InstallmentPlan? @relation(fields: [installmentId], references: [id])
+
+  receiptUrl String?
+  paidAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([caseId])
+  @@index([debtorId])
+}
+
+model InstallmentPlan {
+  id     String   @id @default(cuid())
+  caseId String
+  case   DebtCase @relation(fields: [caseId], references: [id])
+
+  totalAmount          Float
+  numberOfInstallments Int
+  installmentAmount    Float
+  frequency            String
+
+  startDate DateTime
+  endDate   DateTime
+
+  isActive   Boolean @default(true)
+  approvedBy String?
+
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([caseId])
+}
+
+model Settlement {
+  id     String   @id @default(cuid())
+  caseId String
+  case   DebtCase @relation(fields: [caseId], references: [id])
+
+  originalAmount     Float
+  settlementAmount   Float
+  discountPercentage Float
+
+  offeredAt DateTime @default(now())
+  expiresAt DateTime
+
+  acceptedAt DateTime?
+  isAccepted Boolean?
+
+  approvedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([caseId])
+}
+
+model Communication {
+  id       String   @id @default(cuid())
+  caseId   String
+  case     DebtCase @relation(fields: [caseId], references: [id])
+  debtorId String
+  debtor   Debtor   @relation(fields: [debtorId], references: [id])
+
+  sentById String?
+  sentBy   User?   @relation(fields: [sentById], references: [id])
+
+  channel   CommunicationChannel
+  direction String
+
+  subject String?
+  body    String
+  bodyAr  String?
+
+  isAiGenerated Boolean @default(false)
+  templateId    String?
+
+  status String @default("SENT")
+
+  sentAt      DateTime  @default(now())
+  deliveredAt DateTime?
+  readAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+  @@index([debtorId])
+}
+
+model Activity {
+  id     String   @id @default(cuid())
+  caseId String
+  case   DebtCase @relation(fields: [caseId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  type        String
+  description String
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+}
+
+model CommunicationTemplate {
+  id       String               @id @default(cuid())
+  name     String
+  channel  CommunicationChannel
+  language String               @default("en")
+  subject  String?
+  body     String
+  isActive Boolean              @default(true)
+  industry IndustryType?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
