@@ -1,6 +1,5 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 
 export default function SignUpPage() {
   return (
@@ -17,7 +16,6 @@ export default function SignUpPage() {
         </div>
         <SignUp
           appearance={{
-            baseTheme: dark,
             elements: {
               rootBox: "w-full",
               card: "bg-[#111118] border border-[#1E1E2E] shadow-2xl rounded-2xl",
