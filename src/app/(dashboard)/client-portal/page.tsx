@@ -35,6 +35,7 @@ export default function ClientPortalPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0F] p-6">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -56,6 +57,7 @@ export default function ClientPortalPage() {
           </div>
         </div>
 
+        {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {metrics.map((m, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
@@ -70,6 +72,7 @@ export default function ClientPortalPage() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
+          {/* Weekly Recovery */}
           <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
             <h3 className="text-white font-bold text-sm mb-4">Weekly Collections (SAR)</h3>
             <ResponsiveContainer width="100%" height={180}>
@@ -77,11 +80,13 @@ export default function ClientPortalPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2E" />
                 <XAxis dataKey="week" stroke="#4A4A5A" tick={{ fontSize: 12, fill: "#4A4A5A" }} />
                 <YAxis stroke="#4A4A5A" tick={{ fontSize: 11, fill: "#4A4A5A" }} tickFormatter={v => `${(v/1000000).toFixed(1)}M`} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`SAR ${(v/1000000).toFixed(2)}M`]} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`SAR ${((v as number)/1000000).toFixed(2)}M`]} />
                 <Bar dataKey="recovered" fill="#6C5CE7" radius={[4, 4, 0, 0]} name="Collected" />
               </BarChart>
             </ResponsiveContainer>
           </div>
+
+          {/* Recovery Rate Trend */}
           <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
             <h3 className="text-white font-bold text-sm mb-4">Recovery Rate Trend (%)</h3>
             <ResponsiveContainer width="100%" height={180}>
@@ -89,13 +94,14 @@ export default function ClientPortalPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2E" />
                 <XAxis dataKey="month" stroke="#4A4A5A" tick={{ fontSize: 12, fill: "#4A4A5A" }} />
                 <YAxis stroke="#4A4A5A" tick={{ fontSize: 11, fill: "#4A4A5A" }} domain={[50, 75]} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`${v}%`]} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}%`]} />
                 <Line type="monotone" dataKey="rate" stroke="#00B894" strokeWidth={2} dot={{ fill: "#00B894", r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
+        {/* Aging Buckets */}
         <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-[#1E1E2E] flex items-center gap-2">
             <AlertCircle size={15} className="text-[#FDCB6E]" />

@@ -1,7 +1,7 @@
 "use client";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell,
+  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
 } from "recharts";
 
 const monthlyData = [
@@ -52,6 +52,7 @@ export default function AnalyticsPage() {
         <p className="text-[#8888A0] text-sm mt-0.5">Performance metrics and recovery trends</p>
       </div>
 
+      {/* Summary KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Collected", value: "SAR 31.7M", sub: "All time" },
@@ -68,6 +69,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
+        {/* Monthly Collections */}
         <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm mb-4">Monthly Collections vs Target (SAR)</h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -75,13 +77,14 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2E" />
               <XAxis dataKey="month" stroke="#4A4A5A" tick={{ fontSize: 12, fill: "#4A4A5A" }} />
               <YAxis stroke="#4A4A5A" tick={{ fontSize: 11, fill: "#4A4A5A" }} tickFormatter={v => `${(v / 1000000).toFixed(1)}M`} />
-              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`SAR ${(v / 1000000).toFixed(2)}M`]} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`SAR ${((v as number) / 1000000).toFixed(2)}M`]} />
               <Bar dataKey="collected" fill="#6C5CE7" radius={[4, 4, 0, 0]} name="Collected" />
               <Bar dataKey="target" fill="#1E1E2E" radius={[4, 4, 0, 0]} name="Target" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
+        {/* Aging Buckets */}
         <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm mb-4">Debt Aging Buckets</h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -89,12 +92,13 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2E" />
               <XAxis dataKey="bucket" stroke="#4A4A5A" tick={{ fontSize: 12, fill: "#4A4A5A" }} />
               <YAxis stroke="#4A4A5A" tick={{ fontSize: 11, fill: "#4A4A5A" }} tickFormatter={v => `${(v / 1000000).toFixed(0)}M`} />
-              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`SAR ${(v / 1000000).toFixed(2)}M`]} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`SAR ${((v as number) / 1000000).toFixed(2)}M`]} />
               <Bar dataKey="amount" fill="#00CEC9" radius={[4, 4, 0, 0]} name="Outstanding" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
+        {/* Recovery Rate Trend */}
         <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm mb-4">Recovery Rate Trend (%)</h3>
           <ResponsiveContainer width="100%" height={200}>
@@ -102,12 +106,13 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2E" />
               <XAxis dataKey="month" stroke="#4A4A5A" tick={{ fontSize: 12, fill: "#4A4A5A" }} />
               <YAxis stroke="#4A4A5A" tick={{ fontSize: 11, fill: "#4A4A5A" }} domain={[50, 75]} />
-              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`${v}%`]} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}%`]} />
               <Line type="monotone" dataKey="rate" stroke="#6C5CE7" strokeWidth={2} dot={{ fill: "#6C5CE7", r: 4 }} name="Rate" />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
+        {/* Channel Performance */}
         <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm mb-4">Recovery by Channel</h3>
           <div className="flex items-center gap-6">
@@ -131,6 +136,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
+      {/* Client Performance Table */}
       <div className="bg-[#111118] border border-[#1E1E2E] rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#1E1E2E]">
           <h3 className="text-white font-bold text-sm">Client Performance Comparison</h3>
